@@ -3,6 +3,7 @@ from packaging import version
 from webdriver_manager.core.driver import Driver
 from webdriver_manager.core.logger import log
 from webdriver_manager.core.utils import ChromeType, is_arch, is_mac_os
+import re
 
 
 class ChromeDriver(Driver):
@@ -45,13 +46,25 @@ class ChromeDriver(Driver):
         if version.parse(driver_version_to_download) < version.parse("106.0.5249.61"):
             os_type = os_type.replace("mac_arm64", "mac64_m1")
 
-        if version.parse(driver_version_to_download) >= version.parse("114.0.5735.00"):
+        if version.parse(driver_version_to_download) >= version.parse("115"):
             tmp_os_type = os_type
             tmp_os_type = tmp_os_type.replace("mac_arm64", "mac-arm64")
             tmp_os_type = tmp_os_type.replace("mac_x64", "mac-x64")
             modern_version_url = self.get_url_for_version_and_platform(driver_version_to_download, tmp_os_type)
             if modern_version_url != None:
                 return modern_version_url
+            else:
+                if len(driver_version_to_download) < 4:
+                    release_version = self.get_latest_release_for_version(driver_version_to_download)
+                    modern_version_url = self.get_url_for_version_and_platform(release_version, tmp_os_type)
+                    if modern_version_url != None:
+                        return modern_version_url
+                elif re.search(r"\d+\.\d+\.\d+", driver_version_to_download):
+                    release_version = self.get_latest_patch_version_for_build_version(build_version=driver_version_to_download)
+                    modern_version_url = self.get_url_for_version_and_platform(release_version, tmp_os_type)
+                    if modern_version_url != None:
+                        return modern_version_url
+
         return f"{self._url}/{driver_version_to_download}/{self.get_name()}_{os_type}.zip"
 
     def get_browser_type(self):
@@ -61,7 +74,7 @@ class ChromeDriver(Driver):
         determined_browser_version = self.get_browser_version_from_os()
 
         if isinstance(determined_browser_version, str):
-            if version.parse(determined_browser_version) >= version.parse("114.0.5735.00"):
+            if version.parse(determined_browser_version) >= version.parse("115"):
                 return determined_browser_version
 
         log(f"Get LATEST {self._name} version for {self._browser_type}")
@@ -86,5 +99,20 @@ class ChromeDriver(Driver):
                         return d["url"]
 
         return None
-
-
+    
+    def get_latest_release_for_version(self, version, channel_name : str = None):
+        url = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json"
+        response = self._http_client.get(url)
+        data = response.json()
+        versions =[v["version"] for v in data["channels"].values()]
+        for v in versions:
+            if version in v:
+                return v 
+        return None
+                
+    def get_latest_patch_version_for_build_version(self, build_version):
+        url = "https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build.json"
+        response = self._http_client.get(url)
+        data = response.json()
+        return data["builds"][build_version]["version"]
+        
