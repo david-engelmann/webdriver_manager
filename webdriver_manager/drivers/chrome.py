@@ -46,7 +46,7 @@ class ChromeDriver(Driver):
         if version.parse(driver_version_to_download) < version.parse("106.0.5249.61"):
             os_type = os_type.replace("mac_arm64", "mac64_m1")
 
-        if version.parse(driver_version_to_download) >= version.parse("115"):
+        if version.parse(driver_version_to_download) >= version.parse("113"):
             if os_type == "mac64":
                 os_type = "mac-x64"
             if os_type == "mac_x64":
@@ -54,9 +54,8 @@ class ChromeDriver(Driver):
             if os_type in ["mac_64", "mac64_m1", "mac_arm64"]:
                 os_type = "mac-arm64"
             modern_version_url = self.get_url_for_version_and_platform(driver_version_to_download, os_type)
-            if modern_version_url != None:
-                log(f"Modern chrome version {modern_version_url}")
-                return modern_version_url
+            log(f"Modern chrome version {modern_version_url}")
+            return modern_version_url
         return f"{self._url}/{driver_version_to_download}/{self.get_name()}_{os_type}.zip"
 
     def get_browser_type(self):
@@ -65,8 +64,9 @@ class ChromeDriver(Driver):
     def get_latest_release_version(self):
         determined_browser_version = self.get_browser_version_from_os()
 
+        log(f"Get LATEST {self._name} version for {self._browser_type}")
         if isinstance(determined_browser_version, str):
-            if version.parse(determined_browser_version) >= version.parse("115"):
+            if version.parse(determined_browser_version) >= version.parse("113"):
                 return determined_browser_version
 
         latest_release_url = (
@@ -101,7 +101,7 @@ class ChromeDriver(Driver):
                 return modern_version_url
         elif re.search(r"^\d+\.\d+\.\d+$", browser_version):
             release_version = self.get_latest_patch_version_for_build_version(build_version=browser_version)
-            modern_version_url = self.select_url_from_versions(release_version, versions, os_type)
+            modern_version_url = self.select_url_from_versions(release_version, versions, platform)
             if modern_version_url != None:
                 return modern_version_url
         raise Exception(f"No such driver version {browser_version} for {platform}")
