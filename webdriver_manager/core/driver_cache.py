@@ -62,6 +62,7 @@ class DriverCacheManager(object):
 
     def save_file_to_cache(self, driver: Driver, file: File):
         path = self.__get_path(driver)
+        print(f"__get_path issue: {self.__get_path(driver)}")
         archive = self.save_archive_file(file, path)
         files = self.unpack_archive(archive, path)
         binary = self.__get_binary(files, driver.get_name())
@@ -173,11 +174,16 @@ class DriverCacheManager(object):
         return driver.get_driver_version_to_download()
 
     def __get_path(self, driver: Driver):
+        print(f"what driver is passed to __get_path: {driver}")
         if self._driver_binary_path is None:
+            print(
+                f"no _driver_binary_path original:\n_drivers_directory: {self._drivers_directory}\nget_name - {driver.get_name()}\nget_os_type - {self.get_os_type()} \nget_driver_version_to_download: {driver.get_driver_version_to_download()}"
+            )
             self._driver_binary_path = os.path.join(
                 self._drivers_directory,
                 driver.get_name(),
                 self.get_os_type(),
                 driver.get_driver_version_to_download(),
             )
+        print(f"what _driver_binary_path is passed back: {self._driver_binary_path}")
         return self._driver_binary_path
