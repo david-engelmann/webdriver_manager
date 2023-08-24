@@ -44,6 +44,8 @@ class DriverCacheManager(object):
         self._os_system_manager = OperationSystemManager()
         if not self._file_manager:
             print(f"make it to the file_manager fallback")
+            print(f"the os system manager: {self._os_system_manager}")
+            print(f"file_manager: {FileManager(self._os_system_manager)}")
             self._file_manager = FileManager(self._os_system_manager)
 
     def save_archive_file(self, file: File, path):
