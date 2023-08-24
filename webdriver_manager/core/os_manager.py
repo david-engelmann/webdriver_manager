@@ -1,8 +1,11 @@
 import platform
 import sys
 
-from webdriver_manager.core.utils import linux_browser_apps_to_cmd, windows_browser_apps_to_cmd, \
-    read_version_from_cmd
+from webdriver_manager.core.utils import (
+    linux_browser_apps_to_cmd,
+    read_version_from_cmd,
+    windows_browser_apps_to_cmd,
+)
 
 
 class ChromeType(object):
@@ -28,7 +31,6 @@ PATTERN = {
 
 
 class OperationSystemManager(object):
-
     def __init__(self, os_type=None):
         self._os_type = os_type
 
@@ -41,6 +43,8 @@ class OperationSystemManager(object):
             return OSType.MAC
         elif pl == "win32" or pl == "cygwin":
             return OSType.WIN
+        else:
+            raise Exception("os not recognized")
 
     @staticmethod
     def get_os_architecture():
@@ -56,9 +60,9 @@ class OperationSystemManager(object):
 
     @staticmethod
     def is_arch(os_sys_type):
-        if '_m1' in os_sys_type:
+        if "_m1" in os_sys_type:
             return True
-        return platform.processor() != 'i386'
+        return platform.processor() != "i386"
 
     @staticmethod
     def is_mac_os(os_sys_type):
@@ -154,7 +158,9 @@ class OperationSystemManager(object):
         }
 
         try:
-            cmd_mapping = cmd_mapping[browser_type][OperationSystemManager.get_os_name()]
+            cmd_mapping = cmd_mapping[browser_type][
+                OperationSystemManager.get_os_name()
+            ]
             pattern = PATTERN[browser_type]
             version = read_version_from_cmd(cmd_mapping, pattern)
             return version

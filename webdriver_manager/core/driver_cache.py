@@ -2,13 +2,14 @@ import datetime
 import json
 import os
 
-from webdriver_manager.core.config import wdm_local, get_xdist_worker_id
+from webdriver_manager.core.config import get_xdist_worker_id, wdm_local
 from webdriver_manager.core.constants import (
     DEFAULT_PROJECT_ROOT_CACHE_PATH,
-    DEFAULT_USER_HOME_CACHE_PATH, ROOT_FOLDER_NAME,
+    DEFAULT_USER_HOME_CACHE_PATH,
+    ROOT_FOLDER_NAME,
 )
 from webdriver_manager.core.driver import Driver
-from webdriver_manager.core.file_manager import FileManager, File
+from webdriver_manager.core.file_manager import File, FileManager
 from webdriver_manager.core.logger import log
 from webdriver_manager.core.os_manager import OperationSystemManager
 from webdriver_manager.core.utils import get_date_diff
@@ -27,7 +28,9 @@ class DriverCacheManager(object):
             self._root_dir = os.path.join(root_dir, ROOT_FOLDER_NAME, xdist_worker_id)
 
         if is_wdm_local:
-            self._root_dir = os.path.join(DEFAULT_PROJECT_ROOT_CACHE_PATH, xdist_worker_id)
+            self._root_dir = os.path.join(
+                DEFAULT_PROJECT_ROOT_CACHE_PATH, xdist_worker_id
+            )
 
         self._drivers_root = "drivers"
         self._drivers_json_path = os.path.join(self._root_dir, "drivers.json")
@@ -40,6 +43,7 @@ class DriverCacheManager(object):
         self._file_manager = file_manager
         self._os_system_manager = OperationSystemManager()
         if not self._file_manager:
+            print(f"make it to the file_manager fallback")
             self._file_manager = FileManager(self._os_system_manager)
 
     def save_archive_file(self, file: File, path):
@@ -66,7 +70,7 @@ class DriverCacheManager(object):
             return files[0]
 
         for f in files:
-            if 'LICENSE' in f:
+            if "LICENSE" in f:
                 continue
             if driver_name in f:
                 return f
@@ -98,7 +102,9 @@ class DriverCacheManager(object):
         os_type = self.get_os_type()
         driver_name = driver.get_name()
         browser_type = driver.get_browser_type()
-        browser_version = self._os_system_manager.get_browser_version_from_os(browser_type)
+        browser_version = self._os_system_manager.get_browser_version_from_os(
+            browser_type
+        )
         if not browser_version:
             return None
 
@@ -107,8 +113,10 @@ class DriverCacheManager(object):
 
         key = self.__get_metadata_key(driver)
         if key not in metadata:
-            log(f'There is no [{os_type}] {driver_name} "{driver_version}" for browser {browser_type} '
-                f'"{browser_version}" in cache')
+            log(
+                f'There is no [{os_type}] {driver_name} "{driver_version}" for browser {browser_type} '
+                f'"{browser_version}" in cache'
+            )
             return None
 
         driver_info = metadata[key]
@@ -142,8 +150,10 @@ class DriverCacheManager(object):
         driver_version = self.get_cache_key_driver_version(driver)
         browser_version = driver.get_browser_version_from_os()
         browser_version = browser_version if browser_version else ""
-        self._metadata_key = f"{self.get_os_type()}_{driver.get_name()}_{driver_version}" \
-                             f"_for_{browser_version}"
+        self._metadata_key = (
+            f"{self.get_os_type()}_{driver.get_name()}_{driver_version}"
+            f"_for_{browser_version}"
+        )
         return self._metadata_key
 
     def get_cache_key_driver_version(self, driver: Driver):

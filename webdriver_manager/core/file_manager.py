@@ -13,7 +13,9 @@ class File(object):
         self.__stream = stream
         self.file_name = file_name
         self.__temp_name = "driver"
-        self.__regex_filename = r"""filename.+"(.+)"|filename.+''(.+)|filename=([\w.-]+)"""
+        self.__regex_filename = (
+            r"""filename.+"(.+)"|filename.+''(.+)|filename=([\w.-]+)"""
+        )
 
     @property
     def filename(self) -> str:
@@ -23,8 +25,13 @@ class File(object):
             content = self.__stream.headers["content-disposition"]
 
             content_disposition_list = re.split(";", content)
-            filenames = [re.findall(self.__regex_filename, element) for element in content_disposition_list]
-            filename = next(filter(None, next(filter(None, next(filter(None, filenames))))))
+            filenames = [
+                re.findall(self.__regex_filename, element)
+                for element in content_disposition_list
+            ]
+            filename = next(
+                filter(None, next(filter(None, next(filter(None, filenames)))))
+            )
         except KeyError:
             filename = f"{self.__temp_name}.zip"
         except (IndexError, StopIteration):
@@ -37,11 +44,11 @@ class File(object):
 
 
 class FileManager(object):
-
     def __init__(self, os_system_manager: OperationSystemManager):
         self._os_system_manager = os_system_manager
 
     def save_archive_file(self, file: File, directory: str):
+        print(f"directory coming in all messed up: {directory}")
         os.makedirs(directory, exist_ok=True)
 
         archive_path = f"{directory}{os.sep}{file.filename}"
@@ -59,7 +66,11 @@ class FileManager(object):
             return self.__extract_tar_file(archive_file, target_dir)
 
     def __extract_zip(self, archive_file, to_directory):
-        zip_class = (LinuxZipFileWithPermissions if self._os_system_manager.get_os_name() == "linux" else zipfile.ZipFile)
+        zip_class = (
+            LinuxZipFileWithPermissions
+            if self._os_system_manager.get_os_name() == "linux"
+            else zipfile.ZipFile
+        )
         archive = zip_class(archive_file.file_path)
         try:
             archive.extractall(to_directory)
