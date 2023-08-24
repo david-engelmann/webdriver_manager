@@ -45,16 +45,19 @@ class DriverCacheManager(object):
         if not self._file_manager:
             print(f"make it to the file_manager fallback")
             print(f"the os system manager: {self._os_system_manager}")
-            print(
-                f"file_manager: {FileManager(self._os_system_manager)._os_system_manager}"
-            )
+            print(f"file_manager: {FileManager(self._os_system_manager)}")
             print(f"get_os_type: {self._os_system_manager.get_os_name()}")
             self._file_manager = FileManager(self._os_system_manager)
+            print(f"new file manager: {self._file_manager}")
 
     def save_archive_file(self, file: File, path):
+        print(f"file: {file} - {type(file)}")
+        print(f"path: {path} - {type(path)}")
         return self._file_manager.save_archive_file(file, path)
 
     def unpack_archive(self, archive, path):
+        print(f"archive: {archive} - {type(archive)}")
+        print(f"path: {path} - {type(path)}")
         return self._file_manager.unpack_archive(archive, path)
 
     def save_file_to_cache(self, driver: Driver, file: File):
@@ -107,6 +110,9 @@ class DriverCacheManager(object):
         os_type = self.get_os_type()
         driver_name = driver.get_name()
         browser_type = driver.get_browser_type()
+        print(
+            f"cache browser version query: {self._os_system_manager.get_browser_version_from_os(browser_type)}"
+        )
         browser_version = self._os_system_manager.get_browser_version_from_os(
             browser_type
         )

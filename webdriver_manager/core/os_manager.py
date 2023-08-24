@@ -43,8 +43,6 @@ class OperationSystemManager(object):
             return OSType.MAC
         elif pl == "win32" or pl == "cygwin":
             return OSType.WIN
-        else:
-            raise Exception("os not recognized")
 
     @staticmethod
     def get_os_architecture():

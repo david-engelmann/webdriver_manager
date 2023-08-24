@@ -1,17 +1,18 @@
-from webdriver_manager.core.logger import log
 from webdriver_manager.core.config import gh_token
+from webdriver_manager.core.logger import log
 from webdriver_manager.core.os_manager import OperationSystemManager
 
 
 class Driver(object):
     def __init__(
-            self,
-            name,
-            driver_version_to_download,
-            url,
-            latest_release_url,
-            http_client,
-            os_system_manager):
+        self,
+        name,
+        driver_version_to_download,
+        url,
+        latest_release_url,
+        http_client,
+        os_system_manager,
+    ):
         self._name = name
         self._url = url
         self._latest_release_url = latest_release_url
@@ -59,8 +60,13 @@ class Driver(object):
         - for fallback if version was not set at all.
         Note: the fallback may have collisions in user cases when previous browser was not uninstalled properly.
         """
+        print(f"initial browser_version: {self._browser_version}")
         if self._browser_version is None:
-            self._browser_version = self._os_system_manager.get_browser_version_from_os(self.get_browser_type())
+            print(f"get browser type: {self.get_browser_type()}")
+            self._browser_version = self._os_system_manager.get_browser_version_from_os(
+                self.get_browser_type()
+            )
+            print(f"updated browser_version: {self._browser_version}")
         return self._browser_version
 
     def get_browser_type(self):
