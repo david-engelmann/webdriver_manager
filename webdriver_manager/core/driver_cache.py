@@ -51,7 +51,7 @@ class DriverCacheManager(object):
             print(f"new file manager: {self._file_manager}")
 
     def save_archive_file(self, file: File, path):
-        print(f"file: {file} - {type(file)}")
+        print(f"file: {file.filename} - {file.file_name} - {type(file)}")
         print(f"path: {path} - {type(path)}")
         return self._file_manager.save_archive_file(file, path)
 
