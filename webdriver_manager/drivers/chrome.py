@@ -46,7 +46,7 @@ class ChromeDriver(Driver):
         if version.parse(driver_version_to_download) < version.parse("106.0.5249.61"):
             os_type = os_type.replace("mac_arm64", "mac64_m1")
 
-        if version.parse(driver_version_to_download) >= version.parse("113"):
+        if version.parse(driver_version_to_download) >= version.parse("115"):
             if os_type == "mac64":
                 os_type = "mac-x64"
             if os_type == "mac_x64":
@@ -66,7 +66,7 @@ class ChromeDriver(Driver):
 
         log(f"Get LATEST {self._name} version for {self._browser_type}")
         if isinstance(determined_browser_version, str):
-            if version.parse(determined_browser_version) >= version.parse("113"):
+            if version.parse(determined_browser_version) >= version.parse("115"):
                 return determined_browser_version
 
         latest_release_url = (
@@ -80,7 +80,9 @@ class ChromeDriver(Driver):
     def select_url_from_versions(self, browser_version, versions, platform):
         for v in versions:
             if v["version"] == browser_version:
-                downloads = v["downloads"]["chromedriver"]
+                print(f"the v: {v}")
+                chrome_ref = [c_ref for c_ref in v["downloads"].keys() if "chrome" in c_ref][0]
+                downloads = v["downloads"][chrome_ref]
                 for d in downloads:
                     if d["platform"] == platform:
                         return d["url"]
