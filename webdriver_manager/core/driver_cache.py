@@ -32,6 +32,8 @@ class DriverCacheManager(object):
                 DEFAULT_PROJECT_ROOT_CACHE_PATH, xdist_worker_id
             )
 
+        print(f"root_dir: {root_dir}")
+
         self._drivers_root = "drivers"
         self._drivers_json_path = os.path.join(self._root_dir, "drivers.json")
         self._date_format = "%d/%m/%Y"
