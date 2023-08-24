@@ -18,21 +18,27 @@ from webdriver_manager.core.utils import get_date_diff
 class DriverCacheManager(object):
     def __init__(self, root_dir=None, valid_range=1, file_manager=None):
         self._root_dir = DEFAULT_USER_HOME_CACHE_PATH
+        print(f"first _root_dir: {self._root_dir}")
         is_wdm_local = wdm_local()
         xdist_worker_id = get_xdist_worker_id()
+        print(f"is_wdm_local: {is_wdm_local} - {type(is_wdm_local)}")
+        print(f"xdist_worker_id: {xdist_worker_id} - {type(xdist_worker_id)}")
         if xdist_worker_id:
             log(f"xdist worker is: {xdist_worker_id}")
             self._root_dir = os.path.join(self._root_dir, xdist_worker_id)
 
         if root_dir:
             self._root_dir = os.path.join(root_dir, ROOT_FOLDER_NAME, xdist_worker_id)
+            print(f"second _root_dir: {self._root_dir}")
 
         if is_wdm_local:
             self._root_dir = os.path.join(
                 DEFAULT_PROJECT_ROOT_CACHE_PATH, xdist_worker_id
             )
+            print(f"wdm_local _root_dir: {self._root_dir}")
 
         print(f"root_dir: {root_dir}")
+        print(f'expanduser:\n{os.path.expanduser("~")}')
 
         self._drivers_root = "drivers"
         self._drivers_json_path = os.path.join(self._root_dir, "drivers.json")
